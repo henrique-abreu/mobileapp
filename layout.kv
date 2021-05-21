@@ -1,0 +1,172 @@
+WindowManager:
+    LoginWindow:
+    MenuWindow:
+    EntradaWindow:
+    SaidaWindow:
+
+<LoginWindow>:
+    name: "login"
+    user: user
+    password: password
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 1.7
+            padding: 50
+            spacing: 20
+            Image:
+                source: 'picture/1529397696343.png'
+        TextInput:
+            id: user
+            pos_hint: {"x":0.3, "top":0.7-0.13}
+            size_hint: 0.4, 0.05
+            multiline: False
+            hint_text: "Nome de Usuário"
+        TextInput:
+            id: password
+            pos_hint: {"x":0.3, "top":0.6-0.13}
+            size_hint: 0.4, 0.05
+            multiline: False
+            hint_text: "Palavra Passe"
+            password: True
+        Button:
+            text: "Login"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 0.2, 0.1
+            pos: 320, 100
+            on_release:
+                app.root.current = "menu" if app.check_login(user, password)[2] == True else "login"
+                root.manager.transition.direction = "left"
+
+<MenuWindow>
+    name: "menu"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 1.7
+            padding: 50
+            spacing: 20
+            Image:
+                source: 'picture/1529397696343.png'
+        Button:
+            text: "Entradas"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 0.1, 0.1
+            pos: 250, 230
+            on_release:
+                app.root.current = "entrada"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "Saídas"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 0.1, 0.1
+            pos: 450, 230
+            on_release:
+                app.root.current = "saida"
+                root.manager.transition.direction = "left"
+<EntradaWindow>
+    name: "entrada"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 1.7
+            padding: 50
+            spacing: 20
+            Image:
+                source: 'picture/1529397696343.png'
+        Button:
+            text: "Menu"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 0.2, 0.05
+            pos: 0, 550
+            on_release:
+                app.root.current = "menu"
+                root.manager.transition.direction = "right"
+        Label:
+            text: "Tipo: "
+            color: "000000"
+            bold: True
+            font_size: '20sp'
+            pos: -100, 0
+        Spinner:
+            id: tipo_spin
+            text: ""                   #default value showed
+            values: ["Caixa","Saco"]       #list of values to show
+            size_hint: 0.2, 0.05
+            pos: 350, 285
+            on_text:
+                root.on_spinner_select(tipo_spin)
+        Label:
+            text: "Medida: "
+            color: "000000"
+            bold: True
+            font_size: '20sp'
+            pos: -100, -50
+        TextInput:
+            id: medida
+            pos_hint: {"x":0.441, "top":0.6-0.151}
+            size_hint: 0.3, 0.05
+            multiline: False
+            hint_text: "Medida"
+        Label:
+            text: "Quantidade: "
+            color: "000000"
+            bold: True
+            font_size: '20sp'
+            pos: -100, -100
+        TextInput:
+            id: quantidade
+            pos_hint: {"x":0.451, "top":0.51-0.15}
+            size_hint: 0.2, 0.05
+            multiline: False
+            hint_text: "Quantidade"
+        Button:
+            text: "Submit"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 0.2, 0.05
+            pos: 350, 100
+            on_press: app.insert_row(root.manager.screens[0].user.text)#tipo_spin.text, medida.text, quantidade.text)
+
+<SaidaWindow>
+    name: "saida"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 1.7
+            padding: 50
+            spacing: 20
+            Image:
+                source: 'picture/1529397696343.png'
+        Button:
+            text: "Menu"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 0.2, 0.05
+            pos: 0, 550
+            on_release:
+                app.root.current = "menu"
+                root.manager.transition.direction = "right"
