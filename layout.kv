@@ -42,7 +42,11 @@ WindowManager:
             size_hint: 0.2, 0.1
             pos: 320, 100
             on_release:
-                app.root.current = "menu" if app.check_login(user, password)[2] == True else "login"
+                tipo = ""
+                medida = ""
+                quantidade = ""
+                value = 1
+                app.root.current = "menu" if app.conexao_bd(user, password, tipo, medida, quantidade, value) == True else "login"
                 root.manager.transition.direction = "left"
 
 <MenuWindow>
@@ -144,7 +148,9 @@ WindowManager:
             background_color: 0.4, 0.5, 0.6, 1
             size_hint: 0.2, 0.05
             pos: 350, 100
-            on_press: app.insert_row(root.manager.screens[0].user.text)#tipo_spin.text, medida.text, quantidade.text)
+            on_press:
+                value = 2
+                app.conexao_bd(root.manager.screens[0].user, root.manager.screens[0].password, tipo_spin.text, medida.text, quantidade.text, value)
 
 <SaidaWindow>
     name: "saida"

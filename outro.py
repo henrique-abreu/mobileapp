@@ -32,28 +32,11 @@ class MyMainApp(App):
     user = ObjectProperty(None)
     password = ObjectProperty(None)
 
-    def insert_row(self, *args):
-        '''
-        conn = pyodbc.connect('Driver={SQL Server};'
-                              f'Server={os.environ["Server"]};'
-                              f'Database={os.environ["Database"]};'
-                              'Trusted_Connection=no;'
-                              f'UID={user.text};'
-                              f'PWD={password.text};')
-
-        cursor = conn.cursor()
-        cursor.execute(f"INSERT INTO {os.environ['Database']}.dbo.ENTRADAS ({value}, {medida}, {quantidade}) " "values(?,?,?)",
-                       row.value, row.medida, row.quantidade)
-        conn.commit()
-        cursor.close()
-        conn.close()
-    '''
-        print(*args)
-    def check_login(self, user, password):
+    def conexao_bd(self, user, password, tipo, medida, quantidade, value):
+        global conn, cursor
         self.user = user
         self.password = password
         status = True
-        '''
         try:
             conn = pyodbc.connect('Driver={SQL Server};'
                                   f'Server={os.environ["Server"]};'
@@ -61,19 +44,38 @@ class MyMainApp(App):
                                   'Trusted_Connection=no;'
                                   f'UID={user.text};'
                                   f'PWD={password.text};')
-
             cursor = conn.cursor()
-            conn.commit()
-            cursor.close()
-            conn.close()
         except pyodbc.InterfaceError:
             print("O nome de Usuário ou a Palavra Passe digitada é incorreta! \n\t\tTente Novamente")
-            status = False'''
-
+            user.text = ''
+            password.text = ''
+            status = False
+            return status
         if user.text == '' or password.text == '':
             status = False
             print("O nome de Usuário ou a Palavra Passe digitada é incorreta! \n\t\tTente Novamente")
-        return user.text, password.text, status
+            return status
+        if value == 1:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            status = True
+            return status
+        elif value == 2:
+            #print(f"{type(tipo)}: {tipo}\n{type(medida)}: {medida}\n{type(quantidade)}: {quantidade}\n{type(user.text)}: {user.text}")
+            cursor.execute(f"""INSERT INTO {os.environ['Database']}.dbo.ENTRADAS (TIPO, MEDIDA, QUANTIDADE, NOME) VALUES ('{tipo}', '{medida}', {int(quantidade)}, '{user.text}')""")
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return "Linha de Entrada Adicionada"
+        else:
+            cursor = conn.cursor()
+            cursor.execute(f"INSERT INTO {os.environ['Database']}.dbo.SAIDAS ({tipo}, {medida}, {quantidade}) " "values(?,?,?)",
+                row.value, row.medida, row.quantidade)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return "Linha de Saida Adicionada"
 
     def build(self):
         return kv
