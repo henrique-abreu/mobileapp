@@ -32,10 +32,21 @@ class MyMainApp(App):
     user = ObjectProperty(None)
     password = ObjectProperty(None)
 
+    def corrigir_nome(self, user):
+        self.user = user
+        nome = user.split(" ")
+        correcao = ""
+        for i in nome:
+            correcao += str(i).capitalize() + " "
+        return correcao.strip()
+
     def conexao_bd(self, user, password, tipo, medida, quantidade, value):
         global conn, cursor
         self.user = user
         self.password = password
+        self.tipo = tipo
+        self.medida = medida
+        self.quantidade = quantidade
         status = True
         try:
             conn = pyodbc.connect('Driver={SQL Server};'
@@ -62,20 +73,19 @@ class MyMainApp(App):
             status = True
             return status
         elif value == 2:
-            #print(f"{type(tipo)}: {tipo}\n{type(medida)}: {medida}\n{type(quantidade)}: {quantidade}\n{type(user.text)}: {user.text}")
-            cursor.execute(f"""INSERT INTO {os.environ['Database']}.dbo.ENTRADAS (TIPO, MEDIDA, QUANTIDADE, NOME) VALUES ('{tipo}', '{medida}', {int(quantidade)}, '{user.text}')""")
+            cursor.execute(f"""INSERT INTO {os.environ['Database']}.dbo.ENTRADAS (TIPO, MEDIDA, QUANTIDADE, NOME) VALUES ('{tipo}', '{medida}', {int(quantidade)}, '{self.corrigir_nome(user.text)}')""")
             conn.commit()
             cursor.close()
             conn.close()
-            return "Linha de Entrada Adicionada"
-        else:
+            return print("Linha de Entrada Adicionada")
+        elif value == 3:
             cursor = conn.cursor()
-            cursor.execute(f"INSERT INTO {os.environ['Database']}.dbo.SAIDAS ({tipo}, {medida}, {quantidade}) " "values(?,?,?)",
-                row.value, row.medida, row.quantidade)
+            cursor.execute(
+                f"""INSERT INTO {os.environ['Database']}.dbo.SAIDAS (TIPO, MEDIDA, QUANTIDADE, NOME) VALUES ('{tipo}', '{medida}', {int(quantidade)}, '{user.text}')""")
             conn.commit()
             cursor.close()
             conn.close()
-            return "Linha de Saida Adicionada"
+            return print("Linha de Saida Adicionada")
 
     def build(self):
         return kv
