@@ -81,6 +81,13 @@ WindowManager:
             on_release:
                 app.root.current = "saida"
                 root.manager.transition.direction = "left"
+        Button:
+            text: "Sair"
+            background_color: 0.4, 0.5, 0.6, 1
+            size_hint: 1, 0.1
+            on_release:
+                app.stop()
+
 <EntradaWindow>
     name: "entrada"
     FloatLayout:
