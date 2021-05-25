@@ -3,8 +3,34 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image, Widget
 from kivy.properties import ObjectProperty
+from kivy.uix.anchorlayout import AnchorLayout
+from kivy.uix.label import Label
+from kivy.core.window import Window
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 import pyodbc
 import os
+
+class Alert(Popup):
+
+    def __init__(self, title, text):
+        super(Alert, self).__init__()
+        content = AnchorLayout(anchor_x='center', anchor_y='bottom')
+        content.add_widget(
+            Label(text=text, halign='left', valign='top')
+        )
+        ok_button = Button(text='Ok', size_hint=(None, None), size=(Window.width / 8, Window.height / 8))
+        content.add_widget(ok_button)
+
+        popup = Popup(
+            title=title,
+            content=content,
+            size_hint=(None, None),
+            size=(Window.width / 1.5, Window.height / 1.5),
+            auto_dismiss=True,
+        )
+        ok_button.bind(on_press=popup.dismiss)
+        popup.open()
 
 class EntradaWindow(Screen):
     def on_spinner_select(self, text):
@@ -57,14 +83,14 @@ class MyMainApp(App):
                                   f'PWD={password.text};')
             cursor = conn.cursor()
         except pyodbc.InterfaceError:
-            print("O nome de Usuário ou a Palavra Passe digitada é incorreta! \n\t\tTente Novamente")
+            Alert(title='Erro no Login', text='O nome de Usuário ou a Palavra Passe digitada é incorreta! \nTente Novamente!') #popup source: https://stackoverflow.com/questions/42374377/error-with-kivy-login-screen-and-popup
             user.text = ''
             password.text = ''
             status = False
             return status
         if user.text == '' or password.text == '':
             status = False
-            print("O nome de Usuário ou a Palavra Passe digitada é incorreta! \n\t\tTente Novamente")
+            Alert(title='Erro no Login', text='O nome de Usuário ou a Palavra Passe digitada é incorreta! \nTente Novamente')
             return status
         if value == 1:
             conn.commit()
@@ -77,7 +103,8 @@ class MyMainApp(App):
             conn.commit()
             cursor.close()
             conn.close()
-            return print("Linha de Entrada Adicionada")
+            Alert(title='Sucesso', text='Linha de Entrada Adicionada')
+            pass
         elif value == 3:
             cursor = conn.cursor()
             cursor.execute(
@@ -85,7 +112,8 @@ class MyMainApp(App):
             conn.commit()
             cursor.close()
             conn.close()
-            return print("Linha de Saida Adicionada")
+            Alert(title='Sucesso', text='Linha de Saída Adicionada')
+            pass
 
     def build(self):
         return kv
